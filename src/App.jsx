@@ -94,6 +94,7 @@ export default function App() {
             // Check if slice is finished
             if ((count + 1) % clicksPerSlice === 0) {
                 const sliceIdx = Math.floor(count / clicksPerSlice);
+                // Mumma eats even slices (0,2,4,6,8), Ishu eats odd slices (1,3,5,7)
                 const isMumma = sliceIdx % 2 === 0;
 
                 gsap.to(`.cake-slice-${sliceIdx}`, {
@@ -118,8 +119,12 @@ export default function App() {
 
     const handleCenterClick = (e) => {
         e.stopPropagation(); 
+        // Only allow clicking when cake is finished (age = 45)
         if (currentAge === 45) {
+            // Set cakeDone only on first click
             if (!cakeDone) setCakeDone(true);
+            
+            // But confetti fires every time you click the 45
             confetti({
                 particleCount: 150,
                 spread: 70,
@@ -131,8 +136,12 @@ export default function App() {
 
     const getSliceMessage = () => {
         if (currentAge === 45) return "HAPPY BIRTHDAY! TAP THE 45!";
-        const currentSlice = Math.floor(count / clicksPerSlice);
-        return currentSlice % 2 === 0 ? "Share with Mumma! 🍰" : "Ishu's turn! 🧁";
+        
+        // Show who will eat the NEXT slice
+        const nextSliceIdx = Math.floor(count / clicksPerSlice);
+        const nextEater = nextSliceIdx % 2 === 0 ? "Mumma" : "Ishu";
+        
+        return `Click to share with ${nextEater}! ${nextEater === "Mumma" ? "🍰" : "🧁"}`;
     };
 
     return (
@@ -188,9 +197,20 @@ export default function App() {
                             );
                         })}
 
-                        {/* Interactive Center */}
-                        <g onClick={handleCenterClick} className="cursor-pointer">
-                            <circle cx="100" cy="100" r="25" fill="#fbbf24" stroke="#d97706" strokeWidth="2" />
+                        {/* Interactive Center - Only clickable when age = 45 */}
+                        <g 
+                            onClick={handleCenterClick} 
+                            className={currentAge === 45 ? "cursor-pointer" : "pointer-events-none"}
+                        >
+                            <circle 
+                                cx="100" 
+                                cy="100" 
+                                r="25" 
+                                fill="#fbbf24" 
+                                stroke="#d97706" 
+                                strokeWidth="2"
+                                className={currentAge === 45 ? "animate-pulse" : ""}
+                            />
                             <text 
                                 x="100" y="107" 
                                 textAnchor="middle" 
@@ -214,7 +234,7 @@ export default function App() {
 
                 <div className="text-center px-4">
                     <h2 className="text-2xl font-bold uppercase tracking-widest text-amber-900 mb-2">
-                        {currentAge < 45 ? `Age Goal: 45` : "Tap the center!"}
+                        {currentAge < 45 ? `Age: ${currentAge} / 45` : "🎉 Tap the 45! 🎉"}
                     </h2>
                     <p className="text-lg font-medium text-amber-700 h-8">
                         {getSliceMessage()}
@@ -233,8 +253,8 @@ export default function App() {
 
             {cakeDone && (
                 <footer className="h-[40dvh] flex flex-col items-center justify-center opacity-60">
-                    <p className="text-xl">Happy Birthday again, Mumma! ❤️</p>
-                    <p className="mt-4 text-sm">Made by ishu</p>
+                    <p className="text-xl">Happy Birthday again, Mumma!</p>
+                    <p className="mt-4 text-sm">Made by ishu with ❤️</p>
                 </footer>
             )}
         </div>
