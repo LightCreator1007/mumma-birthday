@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "@fontsource-variable/fraunces";
+
+body {
+    backface-visibility: hidden;
+    -webkkit-font-smoothing: antialiased;
+    font-family: "Fraunces Variable", serif;
+}
